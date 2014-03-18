@@ -1,7 +1,9 @@
 /* Import node's http module: */
-var http = require("http");
-var request = require('./request-handler');
+var http = require('http');
+var express = require('express');
+var app = express();
 
+// var request = require('./request-handler');
 
 /* Every server needs to listen on a port with a unique number. The
  * standard port for HTTP servers is port 80, but that port is
@@ -14,8 +16,16 @@ var port = 3000;
  * special address that always refers to localhost. */
 var ip = "127.0.0.1";
 
+app.all('*', function(req, res, next) {
+  var headers = defaultCorsHeaders;
+  headers['Content-Type'] = 'text/plain';
+  next();
+});
 
-
+app.get('/classes', function(req, res) {
+  res.writeHead(200, headers);
+  res.end();
+}
 /* We use node's http module to create a server. Note, we called it 'server', but
 we could have called it anything (myServer, blahblah, etc.). The function we pass it (handleRequest)
 will, unsurprisingly, handle all incoming requests. (ps: 'handleRequest' is in the 'request-handler' file).
@@ -34,3 +44,10 @@ server.listen(port, ip);
  * server.listen() will continue running as long as there is the
  * possibility of serving more requests. To stop your server, hit
  * Ctrl-C on the command line. */
+
+var defaultCorsHeaders = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "access-control-allow-headers": "content-type, accept",
+  "access-control-max-age": 10 // Seconds.
+};
