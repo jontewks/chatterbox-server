@@ -107,7 +107,7 @@ App.prototype.retrieveOnSuccess = function(resultData){
 App.prototype.retrieve = function(){
 	var that = this;
 	$.ajax({
-		url: 'http://127.0.0.1:3000/1/classes/chatterbox',
+		url: 'http://127.0.0.1:3000/classes/messages',
 		type: 'GET',
 		//data: {'order':'-createdAt'},
 		contentType: 'application/json',
@@ -121,7 +121,7 @@ App.prototype.retrieve = function(){
 			}
 		},
 		error: function (data) {
-			console.error('chatterbox: Failed to get message');
+			console.error('messages: Failed to get message');
 		}
 	});
 };
@@ -131,15 +131,15 @@ App.prototype.retrieve = function(){
 // send messages
 App.prototype.send = function(message) {
 	$.ajax({
-		url: 'https://127.0.0.1:3000/1/classes/chatterbox',
+		url: 'https://127.0.0.1:3000/classes/messages',
 		type: 'POST',
 		data: JSON.stringify(message),
 		contentType: 'application/json',
 		success: function (data) {
-			console.log('chatterbox: Message sent');
+			console.log('messages: Message sent');
 		},
 		error: function (data) {
-			console.error('chatterbox: Failed to send message');
+			console.error('messages: Failed to send message');
 		}
 	});
 };

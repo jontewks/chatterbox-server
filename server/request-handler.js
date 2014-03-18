@@ -5,26 +5,42 @@
  * this file and include it in basic-server.js so that it actually works.
  * *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html. */
 var results = [];
-exports.handleRequest = function(request, response) {
 
+exports.handleRequest = function(request, response) {
   var headers = defaultCorsHeaders;
   headers['Content-Type'] = "application/json";
   console.log("Serving request type " + request.method + " for url " + request.url);
-  if (request.method === 'POST') {
-    var statusCode = 201;
+  if (request.url === '/classes/messages'){
+    if (request.method === 'POST') {
+      var statusCode = 201;
+      response.writeHead(statusCode, headers);
+      request.on('data', function(dataChunk){
+        results.push(JSON.parse(dataChunk));
+      });
+      response.end();
+    } else if (request.method === 'GET') {
+      var statusCode = 200;
+      response.writeHead(statusCode, headers);
+      response.end(JSON.stringify({results: results}));
+    }
+  } else if (request.url === '/classes/room') {
+    if (request.method === 'POST') {
+      var statusCode = 201;
+      response.writeHead(statusCode, headers);
+      request.on('data', function(dataChunk){
+        results.push(JSON.parse(dataChunk));
+      });
+      response.end();
+    } else if (request.method === 'GET') {
+      var statusCode = 200;
+      response.writeHead(statusCode, headers);
+      response.end(JSON.stringify({results: results}));
+    }
+  } else {
+    var statusCode = 404;
     response.writeHead(statusCode, headers);
-    request.on('data', function(dataChunk){
-      results.push(dataChunk);
-
-    });
-    console.log(request.url);
     response.end();
-  } else if (request.method === 'GET') {
-    var statusCode = 200;
-    response.writeHead(statusCode, headers);
-    response.end(JSON.stringify({results: results}));
   }
-
 };
 
 /* These headers will allow Cross-Origin Resource Sharing (CORS).
@@ -38,8 +54,6 @@ var defaultCorsHeaders = {
   "access-control-allow-headers": "content-type, accept",
   "access-control-max-age": 10 // Seconds.
 };
-
-
 
 
 // if (request.url === "/1/classes/chatterbox") {
