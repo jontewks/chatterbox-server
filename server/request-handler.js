@@ -8,10 +8,12 @@ var results = [];
 
 exports.handleRequest = function(request, response) {
   var headers = defaultCorsHeaders;
-  headers['Content-Type'] = "application/json";
+  headers['Content-Type'] = 'text/plain';
   console.log("Serving request type " + request.method + " for url " + request.url);
   if (request.url === '/classes/messages'){
+    console.log('hits messages');
     if (request.method === 'POST') {
+      console.log('hits post');
       var statusCode = 201;
       response.writeHead(statusCode, headers);
       request.on('data', function(dataChunk){
@@ -21,7 +23,12 @@ exports.handleRequest = function(request, response) {
     } else if (request.method === 'GET') {
       var statusCode = 200;
       response.writeHead(statusCode, headers);
-      response.end(JSON.stringify({results: results}));
+      console.log(results);
+      response.end(JSON.stringify({results:results}));
+    } else if (request.method === 'OPTIONS') {
+      var statusCode = 200;
+      response.writeHead(statusCode, headers);
+      response.end();
     }
   } else if (request.url === '/classes/room') {
     if (request.method === 'POST') {
@@ -39,7 +46,7 @@ exports.handleRequest = function(request, response) {
   } else {
     var statusCode = 404;
     response.writeHead(statusCode, headers);
-    response.end();
+    response.end('Server is on');
   }
 };
 
@@ -55,25 +62,39 @@ var defaultCorsHeaders = {
   "access-control-max-age": 10 // Seconds.
 };
 
+'<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>chatterbox</title>
+    <link rel="stylesheet" href="styles/styles.css">
 
-// if (request.url === "/1/classes/chatterbox") {
-//   console.log("Serving request type " + request.method + " for url " + request.url);
-
-//   var statusCode = 200;
-
-//   /* Without this line, this server wouldn't work. See the note
-//    * below about CORS. */
-//   var headers = defaultCorsHeaders;
-
-//   headers['Content-Type'] = "application/json";
-
-//    .writeHead() tells our server what HTTP status code to send back
-//   response.writeHead(statusCode, headers);
-
-//   /* Make sure to always call response.end() - Node will not send
-//    * anything back to the client until you do. The string you pass to
-//    * response.end() will be the body of the response - i.e. what shows
-//    * up in the browser.*/
-
-//   response.end(JSON.stringify({results: results}));
-// }
+    <!-- dependencies -->
+    <script src="bower_components/jquery/jquery.min.js"></script>
+    <script src="bower_components/underscore/underscore.js"></script>
+    <!-- your scripts -->
+    <script src="scripts/config.js"></script>
+    <script src="scripts/app.js"></script>
+  </head>
+  <body>
+    <div id="main">
+      <h1>chatterbox</h1>
+      <!-- Your HTML goes here! -->
+      <button id="refresh">Refresh Messages</button>
+      <select id="rooms">
+        <option value="All Rooms"> All Rooms</option>
+      </select>
+      <button id="createRoom">Create Chat Room</button>
+      <div id="friendsBox"><span>Friends:</span> </div>
+      <select id="selectRoom">
+        <option value="All Rooms"> All Rooms</option>
+      </select>
+      <input id="textMsg"type="text">
+      <button id="sendMsg">Send</button>
+      <h3>Filters:</h3>
+      <button id="friendsFilter">Friends Filter</button>
+      <button id="allMessages">All Messages</button>
+      <div id="messagesDiv"></div>
+    </div>
+  </body>
+</html>'
