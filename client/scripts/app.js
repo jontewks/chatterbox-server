@@ -109,10 +109,8 @@ App.prototype.retrieve = function(){
 	$.ajax({
 		url: 'http://127.0.0.1:3000/classes/messages',
 		type: 'GET',
-		//data: {'order':'-createdAt'},
 		contentType: 'application/json',
 		success: function(data){
-			console.log('message recieved!');
 			that.retrieveOnSuccess(data.results);
 			if ($('#rooms').val() !== 'All Rooms') {
 				that.filterRoom($('#rooms').val());
@@ -131,7 +129,7 @@ App.prototype.retrieve = function(){
 // send messages
 App.prototype.send = function(message) {
 	$.ajax({
-		url: 'https://127.0.0.1:3000/classes/messages',
+		url: 'http://127.0.0.1:3000/classes/messages',
 		type: 'POST',
 		data: JSON.stringify(message),
 		contentType: 'application/json',
@@ -164,6 +162,7 @@ $(document).ready(function(){
 			'roomname': $('#selectRoom').val()
 		};
     application.send(msg);
+    $('#textMsg').val('');
   });
 
   // filter friends only on click
@@ -194,6 +193,10 @@ $(document).ready(function(){
 		var roomName = $(this).val();
 		roomName === 'All Rooms' ? $('p').show() : application.filterRoom(roomName);
 	});
+
+	setInterval(function(){
+		application.retrieve();
+	}, 1000);
 });
 
 
