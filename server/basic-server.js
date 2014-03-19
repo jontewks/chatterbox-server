@@ -1,7 +1,8 @@
 /* Import node's http module: */
 var http = require('http');
-var express = require('express');
-var app = express();
+var request = require('./request-handler');
+var httpHelpers = require('./http-helpers');
+var url = require('url')
 
 // var request = require('./request-handler');
 
@@ -16,22 +17,29 @@ var port = 3000;
  * special address that always refers to localhost. */
 var ip = "127.0.0.1";
 
-app.all('*', function(req, res, next) {
-  var headers = defaultCorsHeaders;
-  headers['Content-Type'] = 'text/plain';
-  next();
-});
+var routes = {
+  '/classes/messages': request.handler
+};
 
-app.get('/classes', function(req, res) {
-  res.writeHead(200, headers);
-  res.end();
-}
+var router = function(request, response) {
+  console.log("Serving request type " + request.method + " for url " + request.url);
+
+  var parsedUri = url.parse(request.url);
+
+  var route = routes[parsedUri.pathname];
+  if (route){
+    route(request, response);
+  } else {
+    httpHelpers.sendResponse(response, null, 404);
+  }
+};
+
 /* We use node's http module to create a server. Note, we called it 'server', but
 we could have called it anything (myServer, blahblah, etc.). The function we pass it (handleRequest)
 will, unsurprisingly, handle all incoming requests. (ps: 'handleRequest' is in the 'request-handler' file).
 Lastly, we tell the server we made to listen on the given port and IP. */
-var server = http.createServer(request.handleRequest);
-console.log("Listening on http://" + ip + ":" + port);
+var server = http.createServer(router);
+console.log('Listening on http://' + ip + ':' + port);
 server.listen(port, ip);
 
 /* To start this server, run:
@@ -44,10 +52,3 @@ server.listen(port, ip);
  * server.listen() will continue running as long as there is the
  * possibility of serving more requests. To stop your server, hit
  * Ctrl-C on the command line. */
-
-var defaultCorsHeaders = {
-  "access-control-allow-origin": "*",
-  "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "access-control-allow-headers": "content-type, accept",
-  "access-control-max-age": 10 // Seconds.
-};
